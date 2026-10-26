@@ -1,0 +1,40 @@
+{
+  "template_only": true,
+  "instructions": "Merge these sections into an initialized job after discovering the REAL environment. Replace every READ_REAL value. Prices must be checked against the chosen provider before generation.",
+  "flux": {
+    "api": "http://127.0.0.1:8197",
+    "input_dir": "READ_REAL_COMFYUI_INPUT_DIRECTORY",
+    "output_dir": "READ_REAL_COMFYUI_OUTPUT_DIRECTORY",
+    "unet": "READ_REAL_OBJECT_INFO_UNET_NAME",
+    "clip": "READ_REAL_OBJECT_INFO_CLIP_NAME",
+    "vae": "READ_REAL_OBJECT_INFO_VAE_NAME",
+    "clip_type": "READ_REAL_SUPPORTED_CLIP_TYPE",
+    "text_device": "cpu",
+    "width": 384,
+    "height": 688,
+    "seed": 12345,
+    "steps": 16
+  },
+  "h3": {
+    "model": "READ_REAL_PROVIDER_MODEL",
+    "verified_prices": {
+      "source_url": "",
+      "checked_at": "",
+      "output_per_sec": null,
+      "reference_video_per_sec": null,
+      "free_images": null,
+      "extra_image": null
+    }
+  },
+  "subtitles_required": true,
+  "subtitles": {
+    "instructions": "Use measured source typography and actual output size, not these illustrative values as source evidence.",
+    "play_res_x": 720,
+    "play_res_y": 1280,
+    "font_name": "READ_REAL_INSTALLED_FONT",
+    "font_size": 32,
+    "x": 360,
+    "y": 800,
+    "outline": 0
+  }
+}

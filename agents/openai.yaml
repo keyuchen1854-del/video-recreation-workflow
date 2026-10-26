@@ -1,0 +1,3 @@
+interface:
+  display_name: "视频复刻工作流"
+  short_description: "Gem拆解、FLUX整图替换、H3生成与完整视频对比交付"

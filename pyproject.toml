@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "video-recreation-workflow"
+version = "0.1.0"
+description = "Evidence-led Gem / ComfyUI FLUX / H3 video recreation workflow for Codex"
+requires-python = ">=3.10"
+dependencies = ["Pillow>=10"]
+license = {text = "MIT"}
+
+[project.scripts]
+video-recreate = "workflow:main"
+
+[tool.setuptools]
+py-modules = ["workflow"]
+
