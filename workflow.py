@@ -356,6 +356,36 @@ def nested(value, names):
     return ""
 
 
+def provider_record(payload, task_id):
+    if not isinstance(payload, dict):
+        return {}
+    if str(payload.get("id") or payload.get("task_id") or "") == str(task_id):
+        return payload
+    return next((item for item in payload.get("items", []) if isinstance(item, dict)
+                 and str(item.get("id") or item.get("task_id") or "") == str(task_id)), {})
+
+
+def provider_video_url(payload):
+    if isinstance(payload, dict):
+        content = payload.get("content")
+        if isinstance(content, dict) and isinstance(content.get("url"), str) and content["url"].startswith("https://"):
+            return content["url"]
+        for key in ["video_url", "output_url", "download_url", "file_url", "url"]:
+            value = payload.get(key)
+            if isinstance(value, dict):value = value.get("url")
+            if isinstance(value, str) and value.startswith("https://"):
+                if key != "url" or urlparse(value).path.lower().endswith((".mp4", ".mov", ".webm")):
+                    return value
+        for value in payload.values():
+            found = provider_video_url(value)
+            if found:return found
+    elif isinstance(payload, list):
+        for value in payload:
+            found = provider_video_url(value)
+            if found:return found
+    return ""
+
+
 def estimate(job):
     prices = job["h3"]["verified_prices"]
     if not prices.get("source_url") or not prices.get("checked_at"):
@@ -430,7 +460,7 @@ def h3(job, root, gid, execute=False, approval_path=None, resume=False, wait_sec
         write(record, {"status": "submitted", "task_id": task_id, "group": gid})
     started = time.monotonic()
     while True:
-        url = nested(result, ("video_url", "download_url"))
+        url = provider_video_url(result)
         status = nested(result, ("status", "state", "task_status")).lower()
         if url:
             if urlparse(url).scheme != "https":
@@ -448,7 +478,8 @@ def h3(job, root, gid, execute=False, approval_path=None, resume=False, wait_sec
             raise RuntimeError("Provider task failed; no automatic paid retry")
         if not task_id or time.monotonic() - started > wait_seconds:
             raise TimeoutError("Task ID retained; use --resume or provider history, do not resubmit")
-        result = http_json(query + ("&" if "?" in query else "?") + urlencode({"task_id": task_id}), headers=headers)
+        queried = http_json(query + ("&" if "?" in query else "?") + urlencode({"task_id": task_id}), headers=headers)
+        result = provider_record(queried, task_id)
         time.sleep(10)
 
 

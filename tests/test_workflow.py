@@ -83,6 +83,17 @@ class WorkflowTests(unittest.TestCase):
         w.write(words,dict(timing_source='draft_evenly_spaced',words=[]))
         with self.assertRaises(ValueError):w.captions(self.job,self.root,words)
 
+    def test_query_never_downloads_another_tasks_result(self):
+        payload={'items':[{'id':'another-job','content':{'url':'https://test.invalid/another.mp4'}},{'id':'our-job','content':{'url':'https://test.invalid/ours.mp4'}}]}
+        self.assertEqual(w.provider_video_url(w.provider_record(payload,'our-job')),'https://test.invalid/ours.mp4')
+        self.assertEqual(w.provider_record(payload,'missing-job'),{})
+
+    def test_provider_result_variants(self):
+        for payload in [{'output_url':'https://test.invalid/a.mp4'}, {'video_url':{'url':'https://test.invalid/a.mp4'}}, {'content':{'url':'https://test.invalid/download'}}]:
+            self.assertTrue(w.provider_video_url(payload).startswith('https://test.invalid/'))
+        self.assertEqual(w.provider_video_url({'url':'https://test.invalid/account-page'}),'')
+        self.assertEqual(w.provider_video_url({'video_url':'http://test.invalid/a.mp4'}),'')
+
     @unittest.skipUnless((os.getenv('FFMPEG') or shutil.which('ffmpeg')) and (os.getenv('FFPROBE') or shutil.which('ffprobe')), 'FFmpeg not available')
     def test_real_ffmpeg_on_explicit_synthetic_media(self):
         source=self.root/'synthetic.mp4'
